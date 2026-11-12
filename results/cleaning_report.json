@@ -1,0 +1,142 @@
+{
+  "months": {
+    "2024-01": {
+      "hours": 744,
+      "nan_or_inf": 0,
+      "negative_clipped": 98634,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 13.689752578735352,
+      "mean_monthly_total_mm": 37.77547073364258,
+      "wet_hour_fraction": 0.14501569858712715
+    },
+    "2024-02": {
+      "hours": 696,
+      "nan_or_inf": 0,
+      "negative_clipped": 334039,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 20.58014678955078,
+      "mean_monthly_total_mm": 25.811861038208008,
+      "wet_hour_fraction": 0.09553402262761869
+    },
+    "2024-03": {
+      "hours": 744,
+      "nan_or_inf": 0,
+      "negative_clipped": 260634,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 22.523120880126953,
+      "mean_monthly_total_mm": 20.967483520507812,
+      "wet_hour_fraction": 0.0782844651508246
+    },
+    "2024-04": {
+      "hours": 720,
+      "nan_or_inf": 0,
+      "negative_clipped": 149629,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 32.4354133605957,
+      "mean_monthly_total_mm": 64.72628021240234,
+      "wet_hour_fraction": 0.16958442351299494
+    },
+    "2024-05": {
+      "hours": 744,
+      "nan_or_inf": 0,
+      "negative_clipped": 76075,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 38.67626190185547,
+      "mean_monthly_total_mm": 136.12001037597656,
+      "wet_hour_fraction": 0.24493171958609747
+    },
+    "2024-06": {
+      "hours": 720,
+      "nan_or_inf": 0,
+      "negative_clipped": 16132,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 37.888526916503906,
+      "mean_monthly_total_mm": 390.46221923828125,
+      "wet_hour_fraction": 0.5075719518576661
+    },
+    "2024-07": {
+      "hours": 744,
+      "nan_or_inf": 0,
+      "negative_clipped": 85561,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 33.0379524230957,
+      "mean_monthly_total_mm": 247.18299865722656,
+      "wet_hour_fraction": 0.40176482503671446
+    },
+    "2024-08": {
+      "hours": 744,
+      "nan_or_inf": 0,
+      "negative_clipped": 53984,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 36.704002380371094,
+      "mean_monthly_total_mm": 220.1220703125,
+      "wet_hour_fraction": 0.38019192788778045
+    },
+    "2024-09": {
+      "hours": 720,
+      "nan_or_inf": 0,
+      "negative_clipped": 6165,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 38.920509338378906,
+      "mean_monthly_total_mm": 292.6032409667969,
+      "wet_hour_fraction": 0.42638932496075355
+    },
+    "2024-10": {
+      "hours": 744,
+      "nan_or_inf": 0,
+      "negative_clipped": 65524,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 36.91990661621094,
+      "mean_monthly_total_mm": 297.7512512207031,
+      "wet_hour_fraction": 0.45819829172363735
+    },
+    "2024-11": {
+      "hours": 720,
+      "nan_or_inf": 0,
+      "negative_clipped": 75626,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 30.673471450805664,
+      "mean_monthly_total_mm": 318.388671875,
+      "wet_hour_fraction": 0.4782975754404326
+    },
+    "2024-12": {
+      "hours": 744,
+      "nan_or_inf": 0,
+      "negative_clipped": 120166,
+      "suspect_gt_200mm_per_h": 0,
+      "max_mm_per_h": 25.153461456298828,
+      "mean_monthly_total_mm": 149.01902770996094,
+      "wet_hour_fraction": 0.32207001907462735
+    }
+  },
+  "rejected": [
+    {
+      "file": "2023-01",
+      "reason": "not part of longest contiguous run"
+    },
+    {
+      "file": "2023-02",
+      "reason": "not part of longest contiguous run"
+    },
+    {
+      "file": "2023-03",
+      "reason": "not part of longest contiguous run"
+    },
+    {
+      "file": "2023-04",
+      "reason": "not part of longest contiguous run"
+    },
+    {
+      "file": "2023-05",
+      "reason": "not part of longest contiguous run"
+    }
+  ],
+  "period": "2024-01 .. 2024-12",
+  "summary": {
+    "months_ok": 12,
+    "months_rejected": 5,
+    "total_nan": 0,
+    "total_negative": 1342169,
+    "total_suspect": 0
+  }
+}

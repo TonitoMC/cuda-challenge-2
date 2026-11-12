@@ -1,0 +1,55 @@
+"""04_amdahl.py - Bottleneck + Amdahl's law analysis from measured numbers.
+
+Uses results/benchmark.csv (last row = all months), download logs (seconds per month actually measured),
+and a per-stage timing of the pipeline on CPU and GPU. Writes results/amdahl.json.
+ * parallel fraction f = share of CPU compute time in stages that parallelise across cells
+   (daily sum, scan, gamma fit, CDF/z-score); the dry-day run-length loop is sequential in time.
+ * Amdahl on compute only:   S = 1 / ((1-f) + f/Sp)
+ * Whole workflow (download + read + compute) speedup = T_cpu_total / T_gpu_total, where download is NOT
+   accelerated by the GPU -> this is the real Amdahl limit.
+ * 10x data: every stage measured scales ~linearly (synthetic 9x tiling timing in summary.json).
+"""
+import glob, importlib.util, json, os, re, time
+import numpy as np, pandas as pd, cupy as cp
+
+R = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
+spec = importlib.util.spec_from_file_location("spi", os.path.join(R, "scripts", "02_spi_benchmark.py"))
+spi = importlib.util.module_from_spec(spec); spec.loader.exec_module(spi)
+
+def med(fn, n=5):
+    ts = []
+    for _ in range(n):
+        t = time.perf_counter(); fn(); ts.append(time.perf_counter() - t)
+    return float(np.median(ts))
+
+h = spi.load(); nh, ny, nx = h.shape; nd = nh // 24
+def stages(xp, gammainc, ndtri, x):
+    sync = (lambda: cp.cuda.Device().synchronize()) if xp is cp else (lambda: None)
+    t = {}
+    f = lambda: (x[: nd * 24].reshape(nd, 24, ny * nx).sum(1) * 1000.0, sync())[0]
+    t["daily_sum"] = med(f); daily = f()
+    g = lambda: (xp.concatenate([xp.zeros((1, ny * nx), daily.dtype), xp.cumsum(daily, 0)]), sync())[0]
+    t["scan"] = med(g); cs = g()
+    acc = cs[30:] - cs[:-30]
+    t["gamma_fit_cdf_z"] = med(lambda: (spi._fit_cdf(xp, gammainc, ndtri, acc), sync()))
+    t["dry_days_loop(sequential in time)"] = med(lambda: (spi.dry_run(xp, daily), sync()), 3)
+    return t
+cpu = stages(np, spi.sp_gammainc, spi.sp_ndtri, h)
+gx = cp.asarray(h); stages(cp, spi.cp_gammainc, spi.cp_ndtri, gx)  # warm-up
+gpu = stages(cp, spi.cp_gammainc, spi.cp_ndtri, gx)
+tot = sum(cpu.values()); par = tot - cpu["dry_days_loop(sequential in time)"]
+f = par / tot
+b = pd.read_csv(os.path.join(R, "results", "benchmark.csv")).iloc[-1]
+Sp = sum(cpu.values()) / sum(gpu.values())
+dl = 0.0
+for lg in glob.glob(os.path.join(R, "results", "download*.log")):
+    dl += sum(int(s) for s in re.findall(r"\(\d+, 49, 65\) (\d+)s", open(lg).read()))
+months = int(b.months); t_dl = dl * (months / max(1, len(set(re.findall(r"(\d{4}-\d{2}) \(", "".join(open(l).read() for l in glob.glob(os.path.join(R, 'results', 'download*.log'))))))))
+t_cpu_wf = t_dl + b.t_read + b.t_cpu; t_gpu_wf = t_dl + b.t_read + b.t_h2d + b.t_gpu_compute
+out = dict(months=months, stage_times_cpu_s=cpu, stage_times_gpu_s=gpu, parallel_fraction_f=f,
+           measured_compute_speedup=Sp, amdahl_limit_infinite_gpu=1 / (1 - f),
+           amdahl_prediction_for_measured_Sp=1 / ((1 - f) + f / Sp),
+           download_s=t_dl, workflow_cpu_s=t_cpu_wf, workflow_gpu_s=t_gpu_wf, workflow_speedup=t_cpu_wf / t_gpu_wf,
+           download_over_cpu_compute=t_dl / b.t_cpu,
+           data_10x_workflow_speedup_est=(10 * t_dl + 10 * (b.t_read + b.t_cpu)) / (10 * t_dl + 10 * (b.t_read + b.t_h2d + b.t_gpu_compute)))
+json.dump(out, open(os.path.join(R, "results", "amdahl.json"), "w"), indent=2); print(json.dumps(out, indent=2))

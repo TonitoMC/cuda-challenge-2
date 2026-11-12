@@ -1,0 +1,9 @@
+venv/
+data/
+_build/
+__pycache__/
+*.zip
+propuesta.pdf
+Caso_Practico_CUDA.pdf
+docs/*.pdf
+results/doc_vars.json

@@ -1,0 +1,21 @@
+{'months': 2, 'hours': 1440, 'values': 4586400, 'MB': 18.3456, 't_read': 0.004055291999975452, 't_cpu': 0.012121253002987942, 't_h2d': 0.0012814799993066117, 't_gpu_compute': 0.002092186998197576, 't_gpu_total': 0.003431729001022177, 'speedup_compute': 5.793580121389928, 'speedup_end2end': 3.5321125296832876, 'max_abs_diff_spi': 0.000864754846087834}
+{'months': 3, 'hours': 2184, 'values': 6956040, 'MB': 27.82416, 't_read': 0.005988789002003614, 't_cpu': 0.01956496899947524, 't_h2d': 0.002309296000021277, 't_gpu_compute': 0.0035919309993914794, 't_gpu_total': 0.005962126997474115, 'speedup_compute': 5.446922282969747, 'speedup_end2end': 3.281541806768631, 'max_abs_diff_spi': 0.0006022478609568616}
+{'months': 4, 'hours': 2904, 'values': 9249240, 'MB': 36.99696, 't_read': 0.007594337002956308, 't_cpu': 0.03698234399780631, 't_h2d': 0.0029791699998895638, 't_gpu_compute': 0.006107588000304531, 't_gpu_total': 0.009340157997939968, 'speedup_compute': 6.055147137620011, 'speedup_end2end': 3.95949875858235, 'max_abs_diff_spi': 0.0104372361336873}
+{'months': 6, 'hours': 4368, 'values': 13912080, 'MB': 55.64832, 't_read': 0.015603438001562608, 't_cpu': 0.06105036000008113, 't_h2d': 0.0046233399989432655, 't_gpu_compute': 0.01340921500013792, 't_gpu_total': 0.019393864000448957, 'speedup_compute': 4.552866070046099, 'speedup_end2end': 3.1479214249758503, 'max_abs_diff_spi': 0.0011186483373635259}
+{'months': 12, 'hours': 8784, 'values': 27977040, 'MB': 111.90816, 't_read': 0.026918366998870624, 't_cpu': 0.21433591100139893, 't_h2d': 0.009309261000453262, 't_gpu_compute': 0.04445178000241867, 't_gpu_total': 0.054540712997550145, 'speedup_compute': 4.821762165423672, 'speedup_end2end': 3.9298333157292324, 'max_abs_diff_spi': 0.0014003669273350283}
+{
+  "months_real_data": 12,
+  "scaling_synthetic_9x": {
+    "factor_cells": 9,
+    "values": 251793360,
+    "t_cpu": 1.9641163800006325,
+    "t_gpu_total": 0.5095877940002538,
+    "speedup": 3.854323834137311
+  },
+  "spi30d_guatemala_frac_cells_below_-1_last_day": 0.10661764705882353,
+  "spi30d_guatemala_mean_last_day": -0.2025136042563375,
+  "spi90d_guatemala_frac_cells_below_-1_last_day": 0.0,
+  "spi90d_guatemala_mean_last_day": 0.2526811875113413,
+  "max_consecutive_dry_days_guatemala_mean": 31.095588235294116,
+  "spi30_vs_scipy_gamma_fit_mean_abs_diff_10cells": 0.00703184952972828
+}

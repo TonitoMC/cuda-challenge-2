@@ -1,0 +1,25 @@
+{
+  "months": 12,
+  "stage_times_cpu_s": {
+    "daily_sum": 0.00421849800113705,
+    "scan": 0.002071891001833137,
+    "gamma_fit_cdf_z": 0.12756890200034832,
+    "dry_days_loop(sequential in time)": 0.001880640000308631
+  },
+  "stage_times_gpu_s": {
+    "daily_sum": 0.0004156620016146917,
+    "scan": 0.00011597599950619042,
+    "gamma_fit_cdf_z": 0.03280892700058757,
+    "dry_days_loop(sequential in time)": 0.005631293999613263
+  },
+  "parallel_fraction_f": 0.9861452706922448,
+  "measured_compute_speedup": 3.4830242765433272,
+  "amdahl_limit_infinite_gpu": 72.17751987693093,
+  "amdahl_prediction_for_measured_Sp": 3.3671875393147737,
+  "download_s": 836.25,
+  "workflow_cpu_s": 836.4912542780003,
+  "workflow_gpu_s": 836.3306794080017,
+  "workflow_speedup": 1.000191999258131,
+  "download_over_cpu_compute": 3901.586048240614,
+  "data_10x_workflow_speedup_est": 1.000191999258131
+}

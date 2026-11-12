@@ -1,0 +1,16 @@
+{
+  "months_real_data": 12,
+  "scaling_synthetic_9x": {
+    "factor_cells": 9,
+    "values": 251793360,
+    "t_cpu": 1.9641163800006325,
+    "t_gpu_total": 0.5095877940002538,
+    "speedup": 3.854323834137311
+  },
+  "spi30d_guatemala_frac_cells_below_-1_last_day": 0.10661764705882353,
+  "spi30d_guatemala_mean_last_day": -0.2025136042563375,
+  "spi90d_guatemala_frac_cells_below_-1_last_day": 0.0,
+  "spi90d_guatemala_mean_last_day": 0.2526811875113413,
+  "max_consecutive_dry_days_guatemala_mean": 31.095588235294116,
+  "spi30_vs_scipy_gamma_fit_mean_abs_diff_10cells": 0.00703184952972828
+}

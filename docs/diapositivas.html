@@ -1,0 +1,88 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Sequía en el Corredor Seco con GPU</title><style>
+@page{size:1920px 1080px;margin:0}
+*{box-sizing:border-box;margin:0}
+body{background:#14213D;font-family:'Inter','DejaVu Sans',Arial,sans-serif;color:#14213D}
+.s{width:1920px;height:1080px;background:#FBFBF8;padding:96px 130px 120px;position:relative;overflow:hidden;
+   page-break-after:always;break-after:page;display:flex;flex-direction:column}
+.dark{background:#14213D;color:#FBFBF8}
+h1{font-size:112px;line-height:1.05;font-weight:800}
+h2{font-size:64px;font-weight:800;line-height:1.1;height:80px;margin-bottom:56px}
+p,li{font-size:38px;line-height:1.4;color:#2d3748}.dark p,.dark li{color:#e6e9ef}
+ul{padding-left:44px}li{margin-bottom:22px}
+.acc{color:#C2410C}.dark .acc{color:#FDBA74}.mid{color:#4A5568}.dark .mid{color:#b8c0d0}
+.body{flex:1;display:grid;gap:64px;align-items:start;min-height:0}
+.two{grid-template-columns:1fr 1fr}.wide{grid-template-columns:1.25fr 1fr}
+.stack{display:flex;flex-direction:column;gap:28px}
+.card{background:#fff;border:2px solid #e3e6e4;border-radius:20px;padding:34px 40px}
+.dark .card{background:#1d2d52;border-color:#2c3f6b}
+.n{font-size:120px;font-weight:800;line-height:1;color:#C2410C}.dark .n{color:#FDBA74}
+.n.m{font-size:84px}
+.l{font-size:32px;line-height:1.3;color:#4A5568;margin-top:10px}.dark .l{color:#b8c0d0}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.step{background:#fff;border:3px solid #C2410C;border-radius:20px;padding:30px 30px 34px}
+.step b{display:block;font-size:30px;color:#C2410C;margin-bottom:8px;letter-spacing:1px}
+.step h3{font-size:38px;line-height:1.2;margin-bottom:14px}
+.step p{font-size:30px;line-height:1.35}
+.formula{font-size:44px;font-family:'DejaVu Serif',Georgia,serif;background:#fff;border:2px solid #e3e6e4;border-radius:16px;padding:26px 36px;margin-top:40px;text-align:center}
+table{border-collapse:collapse;width:100%}
+th{font-size:28px;text-align:left;color:#4A5568;padding:14px 18px;border-bottom:3px solid #14213D;font-weight:700}
+td{font-size:32px;padding:18px;border-bottom:1px solid #d8dce0;vertical-align:top;color:#2d3748}
+td.r,th.r{text-align:right}
+img{display:block;width:100%;border-radius:14px;border:2px solid #e3e6e4;background:#fff}
+.foot{position:absolute;left:130px;bottom:40px;font-size:24px;color:#6a7179}
+.small{font-size:28px;color:#6a7179}
+</style></head><body><section class="s dark"><div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:40px">
+<h1>¿Va a llover<br>este año?</h1>
+<p style="font-size:52px;font-weight:600;color:#FDBA74;line-height:1.25">Índice de sequía para cada celda de Centroamérica,<br>calculado en CPU y en GPU</p>
+<p class="mid" style="font-size:34px">Javier España (23361) · Angel Esquit (23221) · José Mérida (201105)<br>CC3069 Computación Paralela y Distribuida · Universidad del Valle de Guatemala · Caso 4</p></div><div class="foot">CC3069 · UVG · 1</div></section><section class="s"><h2>Don Chepe tiene una sola cosecha</h2>
+<div class="body two"><ul>
+<li>Familias de Zacapa, Chiquimula, Jutiapa y otros departamentos viven de <b>una cosecha</b> de maíz y frijol al año.</li>
+<li>Si la lluvia falla y nadie avisa a tiempo, no hay semilla resistente ni cambio de siembra, y llega la <b>inseguridad alimentaria</b>.</li>
+<li>El MAGA necesita saber <b>qué municipios alertar</b> esta temporada.</li></ul>
+<div class="card"><div class="n m">horas o días</div><div class="l">Si calcular el índice de lluvia de toda la región tarda eso, la alerta llega cuando la cosecha ya se perdió.</div></div></div>
+<p class="small">Don Chepe es un personaje ilustrativo.</p><div class="foot">CC3069 · UVG · 2</div></section><section class="s"><h2>Los datos</h2>
+<div class="body two"><ul>
+<li><b>ERA5</b> de Copernicus, lluvia horaria, rejilla de 0,25° (unos 31 km), licencia CC-BY 4.0.</li>
+<li>Ventana de Centroamérica, 49 × 65 = 3185 celdas, bajada de la copia pública ARCO-ERA5.</li>
+<li>Limpieza de cada mes. Se revisa la forma del archivo, se cuentan NaN (0), se recortan 1 342 169 negativos por redondeo y se marcan valores sospechosos (0).</li>
+<li>Se descartan 5 archivos que no enlazan con la serie continua.</li></ul>
+<div class="stack">
+<div class="card"><div class="n">28.0 M</div><div class="l">valores horarios en 12 meses (112 MB en float32)</div></div>
+<div class="card"><div class="n">14 min</div><div class="l">solo para descargarlos, más de 3 902 veces lo que tarda calcular el índice en CPU</div></div></div></div><div class="foot">CC3069 · UVG · 3</div></section><section class="s"><h2>Qué calculamos, el índice SPI</h2>
+<div class="steps">
+<div class="step"><b>PASO 1</b><h3>Lluvia diaria</h3><p>Se suman las 24 horas de cada día y se pasa a milímetros. Son 366 días por celda.</p></div>
+<div class="step"><b>PASO 2</b><h3>Acumulado móvil</h3><p>Suma de los últimos k = 30 y 90 días con una suma prefija (scan). Cada ventana cuesta una resta.</p></div>
+<div class="step"><b>PASO 3</b><h3>Gamma por celda</h3><p>Con las ventanas de cada celda se estiman la forma α y la escala β (aproximación de Thom) y la fracción q de ventanas sin lluvia.</p></div>
+<div class="step"><b>PASO 4</b><h3>Puntaje z</h3><p>Se ve qué tan rara es cada ventana en su celda y se convierte a una normal estándar.</p></div></div>
+<div class="formula">z = Φ⁻¹( q + (1 − q) · G(x ; α, β) )</div>
+<ul style="margin-top:44px"><li><b>z &lt; −1</b> es sequía moderada y <b>z &lt; −2</b> es sequía extrema. Hay 337 ventanas de 30 días en cada una de las 3185 celdas.</li></ul><div class="foot">CC3069 · UVG · 4</div></section><section class="s"><h2>Qué se paraleliza y qué no</h2>
+<table><tr><th style="width:27%">Etapa</th><th>Cómo trabaja la GPU</th><th class="r">CPU (ms)</th><th class="r">GPU (ms)</th><th class="r">Speedup</th></tr><tr><td><b>Lluvia horaria a diaria</b></td><td>Una suma por celda y día, todas a la vez</td><td class='r'>4.2</td><td class='r'>0.4</td><td class='r'><b>10.1×</b></td></tr><tr><td><b>Acumulado móvil (scan)</b></td><td>Suma prefija sobre el tiempo, una columna por celda</td><td class='r'>2.1</td><td class='r'>0.1</td><td class='r'><b>17.9×</b></td></tr><tr><td><b>Gamma, CDF y puntaje z</b></td><td>Un hilo por celda y ventana, sin comunicación</td><td class='r'>127.6</td><td class='r'>32.8</td><td class='r'><b>3.9×</b></td></tr><tr><td><b>Días secos consecutivos</b></td><td>Depende del día anterior, secuencial en el tiempo</td><td class='r'>1.9</td><td class='r'>5.6</td><td class='r'><b>0.3×</b></td></tr></table>
+<ul style="margin-top:50px"><li>Las celdas son independientes y están contiguas en memoria, así que los hilos vecinos leen direcciones vecinas.</li>
+<li>La última etapa es <b>más lenta en GPU</b>, porque lanza un kernel por paso de tiempo y casi no hay trabajo que repartir.</li></ul><div class="foot">CC3069 · UVG · 5</div></section><section class="s"><h2>Cómo medimos para comparar justo</h2>
+<div class="body two"><ul>
+<li>La misma función corre en CPU y en GPU, solo cambia el módulo numérico (NumPy y SciPy contra CuPy).</li>
+<li>Mismos datos, misma tarea y NVIDIA GeForce RTX 4070 SUPER con CUDA 12.9.</li>
+<li>Mediana de 5 repeticiones, calentamiento de la GPU y <b>synchronize</b> antes de parar el reloj.</li>
+<li>Tres tiempos por separado, lectura de disco, copia host a GPU y cómputo.</li></ul>
+<div class="stack">
+<div class="card"><div class="n m">1.4e-03</div><div class="l">diferencia máxima del SPI entre CPU y GPU</div></div>
+<div class="card"><div class="n m">7.0e-03</div><div class="l">error medio contra el ajuste de máxima verosimilitud de SciPy, en 10 celdas de Guatemala</div></div></div></div><div class="foot">CC3069 · UVG · 6</div></section><section class="s"><h2>El resultado, GPU contra CPU</h2>
+<div class="body wide"><div class="stack">
+<div class="card"><div class="n">4.8×</div><div class="l">speedup del cálculo, de 214.3 ms en CPU a 44.5 ms en GPU</div></div>
+<div class="card"><div class="n">17%</div><div class="l">del tiempo de GPU se va en copiar los datos (9.3 ms)</div></div></div>
+<img src="timing.png"></div><div class="foot">CC3069 · UVG · 7</div></section><section class="s dark"><h2 style="color:#FBFBF8">El cuello de botella no era el cálculo</h2>
+<div class="body two"><div class="stack"><div class="card"><div class="n">3 902×</div><div class="l">lo que tarda traer los datos frente a calcular el SPI en CPU</div></div>
+<div class="card"><div class="n">1.0002×</div><div class="l">speedup del flujo completo de descarga, lectura y cálculo</div></div></div>
+<ul><li>Según Amdahl, la parte paralela (f = 98.6 %) sí se acelera, pero la descarga y la lectura no, y ese tiempo lo domina todo.</li>
+<li>Con 10 veces más datos todas las etapas escalan casi lineal, y la descarga también.</li>
+<li>El speedup es modesto porque cada celda hace poca aritmética por byte leído.</li></ul></div><div class="foot">CC3069 · UVG · 8</div></section><section class="s"><h2>Qué cambia para el MAGA</h2>
+<div class="body two"><ul>
+<li>Con los datos ya en memoria, el mapa de SPI de toda la región se <b>recalcula en milisegundos</b> y se prueban definiciones de sequía al instante.</li>
+<li>La prioridad es la <b>logística de datos</b>, con series particionadas por espacio o subconjuntos del CDS, antes de comprar más GPU.</li>
+<li>Con solo 12 meses estos mapas no son hallazgos de sequía. Falta validar contra años secos y agregar por municipio.</li></ul>
+<img src="spi30d_map.png"></div><div class="foot">CC3069 · UVG · 9</div></section><section class="s"><h2>Fuentes</h2>
+<p style="font-size:32px">Hersbach, H. et al. (2023), <i>ERA5 hourly data on single levels from 1940 to present</i>, C3S CDS, doi:10.24381/cds.adbb2d47 (CC-BY 4.0).<br><br>
+Copia ARCO-ERA5 (Google Cloud Public Datasets), github.com/google-research/arco-era5.<br><br>
+McKee, Doesken y Kleist (1993), <i>The relationship of drought frequency and duration to time scales</i>.<br><br>
+NumPy, SciPy, xarray, Zarr, CuPy y Matplotlib. NVIDIA CUDA, docs.nvidia.com/cuda<br><br>
+Código en github.com/TonitoMC/cuda-challenge-2</p><div class="foot">CC3069 · UVG · 10</div></section></body></html>
