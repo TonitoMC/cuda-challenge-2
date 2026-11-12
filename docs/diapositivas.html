@@ -52,7 +52,7 @@ img{display:block;width:100%;border-radius:14px;border:2px solid #e3e6e4;backgro
 <li>Se descartan 5 archivos que no enlazan con la serie continua.</li></ul>
 <div class="stack">
 <div class="card"><div class="n">28.0 M</div><div class="l">valores horarios en 12 meses (112 MB en float32)</div></div>
-<div class="card"><div class="n">14 min</div><div class="l">solo para descargarlos, más de 3 902 veces lo que tarda calcular el índice en CPU</div></div></div></div><div class="foot">CC3069 · UVG · 3</div></section><section class="s"><h2>Qué es el SPI</h2>
+<div class="card"><div class="n">3185</div><div class="l">celdas, cada una con 366 días de lluvia y su propio ajuste</div></div></div></div><div class="foot">CC3069 · UVG · 3</div></section><section class="s"><h2>Qué es el SPI</h2>
 <ul><li>Es un <b>número por cada celda</b> del mapa que dice si la lluvia reciente es mucha o poca para ese lugar.</li>
 <li>Compara contra lo <b>normal de la misma celda</b>. 50 mm son poca lluvia en una zona húmeda y mucha en una seca.</li>
 <li>El <b>0</b> es normal y cada paso negativo es más seco. Cuando baja de <b>−1</b> se activa la alerta.</li></ul>
@@ -83,19 +83,23 @@ img{display:block;width:100%;border-radius:14px;border:2px solid #e3e6e4;backgro
 <div class="body wide"><div class="stack">
 <div class="card"><div class="n">4.8×</div><div class="l">speedup del cálculo, de 214.3 ms en CPU a 44.5 ms en GPU</div></div>
 <div class="card"><div class="n">17%</div><div class="l">del tiempo de GPU se va en copiar los datos (9.3 ms)</div></div></div>
-<img src="timing.png"></div><div class="foot">CC3069 · UVG · 8</div></section><section class="s dark"><h2 style="color:#FBFBF8">El cuello de botella no era el cálculo</h2>
-<div class="body two"><div class="stack"><div class="card"><div class="n">3 902×</div><div class="l">lo que tarda traer los datos frente a calcular el SPI en CPU</div></div>
-<div class="card"><div class="n">1.0002×</div><div class="l">speedup del flujo completo de descarga, lectura y cálculo</div></div></div>
-<ul><li>Según Amdahl, la parte paralela (f = 98.6 %) sí se acelera, pero la descarga y la lectura no, y ese tiempo lo domina todo.</li>
-<li>Con 10 veces más datos todas las etapas escalan casi lineal, y la descarga también.</li>
-<li>El speedup es modesto porque cada celda hace poca aritmética por byte leído.</li></ul></div><div class="foot">CC3069 · UVG · 9</div></section><section class="s"><h2>Qué cambia para el MAGA</h2>
+<img src="timing.png"></div><div class="foot">CC3069 · UVG · 8</div></section><section class="s dark"><h2 style="color:#FBFBF8">Mover datos pesa casi tanto como calcular</h2>
+<div class="body two"><div class="stack"><div class="card"><div class="n">45%</div><div class="l">del tiempo del flujo en GPU se va en leer del disco y copiar a la GPU</div></div>
+<div class="card"><div class="n">3.0×</div><div class="l">speedup del flujo completo, contra 4.8× del cálculo solo</div></div></div>
+<ul><li>Según Amdahl, la parte paralela (f = 98.6 %) sí se acelera, pero la lectura no y la copia es un costo extra de la GPU.</li>
+<li>Aun con cálculo gratis, el flujo completo no pasaría de <b>6.7×</b>.</li>
+<li>Con 10 veces más celdas el speedup se mantiene (3.9×), así que la relación CPU y GPU no cambia con el tamaño.</li></ul></div><div class="foot">CC3069 · UVG · 9</div></section><section class="s"><h2>Del benchmark al problema real</h2>
+<p style="margin-bottom:30px">El MAGA necesita actualizar el mapa cuando llegan datos y probar otras definiciones de sequía. Así de largo sería una actualización completa.</p>
+<table><tr><th style="width:6%"></th><th>Escenario</th><th class="r">GB</th><th class="r">CPU</th><th class="r">GPU</th></tr><tr><td><b>A</b></td><td>12 meses, 0,25°, 2 escalas (medido)</td><td class='r'>0.1</td><td class='r'>0.24 s</td><td class='r'><b>0.08 s</b></td></tr><tr><td><b>B</b></td><td>40 años, 0,25°, 2 escalas</td><td class='r'>4.5</td><td class='r'>10 s</td><td class='r'><b>3 s</b></td></tr><tr><td><b>C</b></td><td>40 años, 0,1° (ERA5-Land), 2 escalas</td><td class='r'>28.0</td><td class='r'>60 s</td><td class='r'><b>20 s</b></td></tr><tr><td><b>D</b></td><td>como C con 12 escalas (1 a 12 meses)</td><td class='r'>28.0</td><td class='r'>6.0 min</td><td class='r'><b>2.0 min</b></td></tr></table>
+<ul style="margin-top:44px"><li>Son estimaciones lineales a partir de lo que medimos, no mediciones nuevas.</li>
+<li>La GPU acorta el trabajo unas 3.0 veces. En el escenario D son <b>6.0 min contra 2.0 min</b>, la diferencia entre esperar y poder iterar.</li></ul><div class="foot">CC3069 · UVG · 10</div></section><section class="s"><h2>Qué cambia para el MAGA</h2>
 <div class="body two"><ul>
-<li>Con los datos ya en memoria, el mapa de SPI de toda la región se <b>recalcula en milisegundos</b> y se prueban definiciones de sequía al instante.</li>
+<li>Con los datos ya en memoria, el mapa de SPI de toda la región se <b>recalcula en una fracción de segundo</b> y se prueban definiciones de sequía al instante.</li>
 <li>La prioridad es la <b>logística de datos</b>, con series particionadas por espacio o subconjuntos del CDS, antes de comprar más GPU.</li>
 <li>Con solo 12 meses estos mapas no son hallazgos de sequía. Falta validar contra años secos y agregar por municipio.</li></ul>
-<img src="spi30d_map.png"></div><div class="foot">CC3069 · UVG · 10</div></section><section class="s"><h2>Fuentes</h2>
+<img src="spi30d_map.png"></div><div class="foot">CC3069 · UVG · 11</div></section><section class="s"><h2>Fuentes</h2>
 <p style="font-size:32px">Hersbach, H. et al. (2023), <i>ERA5 hourly data on single levels from 1940 to present</i>, C3S CDS, doi:10.24381/cds.adbb2d47 (CC-BY 4.0).<br><br>
 Copia ARCO-ERA5 (Google Cloud Public Datasets), github.com/google-research/arco-era5.<br><br>
 McKee, Doesken y Kleist (1993), <i>The relationship of drought frequency and duration to time scales</i>.<br><br>
 NumPy, SciPy, xarray, Zarr, CuPy y Matplotlib. NVIDIA CUDA, docs.nvidia.com/cuda<br><br>
-Código en github.com/TonitoMC/cuda-challenge-2</p><div class="foot">CC3069 · UVG · 11</div></section></body></html>
+Código en github.com/TonitoMC/cuda-challenge-2</p><div class="foot">CC3069 · UVG · 12</div></section></body></html>

@@ -16,10 +16,9 @@
   "measured_compute_speedup": 3.4830242765433272,
   "amdahl_limit_infinite_gpu": 72.17751987693093,
   "amdahl_prediction_for_measured_Sp": 3.3671875393147737,
-  "download_s": 836.25,
-  "workflow_cpu_s": 836.4912542780003,
-  "workflow_gpu_s": 836.3306794080017,
-  "workflow_speedup": 1.000191999258131,
-  "download_over_cpu_compute": 3901.586048240614,
-  "data_10x_workflow_speedup_est": 1.000191999258131
+  "workflow_cpu_s": 0.2412542780002695,
+  "workflow_gpu_s": 0.0806794080017424,
+  "workflow_speedup": 2.990283195869003,
+  "data_movement_share_of_gpu_workflow": 0.44903190165378265,
+  "workflow_speedup_limit_if_compute_free": 6.659400334042642
 }

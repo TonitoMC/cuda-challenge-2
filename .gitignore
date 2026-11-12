@@ -7,3 +7,5 @@ propuesta.pdf
 Caso_Practico_CUDA.pdf
 docs/*.pdf
 results/doc_vars.json
+results/download*.log
+results/amdahl.log
